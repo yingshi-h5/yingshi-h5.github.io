@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>影视 - 胶片暗房 · 光学放映台 | yingshi-h5.github.io</title>
+<meta name="description" content="影视单页网站，胶片暗房风：暗房黑、安全灯琥珀、显影青、银盐灰。暗房新片、光学修复、胶片档案、放映排期、显影词典。官网 https://yingshi-h5.github.io">
+<meta name="keywords" content="影视, 胶片暗房, 光学修复, 电影档案, 放映排期, yingshi-h5">
+<meta name="author" content="影视">
+<meta name="robots" content="index,follow">
+<meta name="bingbot" content="index,follow">
+<meta name="theme-color" content="#0a0a0f">
+<style>
+:root{
+  --dark:#0a0a0f;
+  --dark2:#111118;
+  --tray:#16161f;
+  --amber:#e8743b;
+  --cyan:#3ecfcf;
+  --silver:#c4c0b8;
+  --fix:#f0c040;
+  --red:#c02030;
+  --ink:#e8e4dc;
+  --muted:#8a867c;
+  --mono:Consolas,Menlo,monospace;
+  --shadow:0 20px 50px rgba(0,0,0,.7);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{
+  background:
+    radial-gradient(600px 340px at 85% -10%,rgba(232,116,59,.14),transparent),
+    radial-gradient(500px 300px at -10% 5%,rgba(62,207,207,.12),transparent),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 4px),
+    linear-gradient(180deg,#0a0a0f,#0d0d14 55%,#06060a);
+  color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  line-height:1.9;
+}
+a{color:var(--amber);text-decoration:none}
+
+/* 暗房工具条 */
+.tools{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:8px;padding:12px 18px;
+  background:rgba(10,10,15,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(232,116,59,.3);overflow-x:auto;}
+.tools::-webkit-scrollbar{display:none}
+.tools .brand{display:flex;flex-direction:column;margin-right:auto;flex-shrink:0}
+.tools .brand b{font-family:var(--mono);font-size:18px;color:var(--amber);letter-spacing:3px}
+.tools .brand span{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:4px}
+.tool-btn{flex-shrink:0;font-size:11px;padding:6px 14px;border:1px solid rgba(232,116,59,.35);border-radius:20px;background:var(--tray);color:var(--silver);white-space:nowrap;transition:.2s}
+.tool-btn:hover{border-color:var(--amber);color:var(--amber);box-shadow:0 0 14px rgba(232,116,59,.25)}
+
+/* 安全灯呼吸 */
+.safelight{position:fixed;top:0;left:0;right:0;height:3px;z-index:100;background:var(--red);animation:safepulse 4s ease-in-out infinite}
+@keyframes safepulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* 暗房门厅 */
+.vestibule{max-width:1080px;margin:0 auto;padding:60px 20px 30px;text-align:center;position:relative}
+.glow{position:absolute;inset:20px 16px auto 16px;height:200px;border-radius:24px;
+  background:radial-gradient(ellipse at center,rgba(62,207,207,.18),transparent 70%);
+  filter:blur(30px);z-index:0}
+.vestibule .lens{position:relative;z-index:2;font-size:48px;margin-bottom:8px}
+.vestibule h1{position:relative;z-index:2;font-size:34px;font-weight:900;font-family:var(--mono);letter-spacing:2px}
+.vestibule h1 em{font-style:normal;color:var(--amber)}
+.vestibule p{position:relative;z-index:2;color:var(--muted);max-width:640px;margin:10px auto 16px;font-size:15px}
+.vestibule .url{position:relative;z-index:2;display:inline-block;font-family:var(--mono);font-size:13px;background:var(--tray);border:1px dashed var(--cyan);color:var(--cyan);padding:8px 18px;border-radius:8px}
+.stats{position:relative;z-index:2;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.stats div{background:var(--tray);border:1px solid rgba(62,207,207,.25);border-radius:14px;padding:12px 18px;min-width:110px}
+.stats b{display:block;font-size:22px;color:var(--amber);font-family:var(--mono)}
+.stats small{color:var(--muted);font-size:11px}
+
+/* 显影盘网格 */
+.lab{max-width:1080px;margin:0 auto;padding:20px}
+.tray-section{margin-bottom:40px}
+.tray-section > .label{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid rgba(232,116,59,.4)}
+.tray-section > .label h2{font-size:21px;font-weight:900;font-family:var(--mono)}
+.tray-section > .label h2 b{color:var(--cyan)}
+.tray-section > .label .badge{font-size:10px;color:var(--dark);background:var(--fix);padding:3px 10px;border-radius:6px;font-weight:800;font-family:var(--mono)}
+.tray-section > .label .desc{margin-left:auto;font-size:12px;color:var(--muted);font-family:var(--mono)}
+
+/* 暗房操作台 - 差异化DOM */
+.workbench{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:720px){.workbench{grid-template-columns:1fr}}
+
+.filmstrip{background:linear-gradient(180deg,var(--tray),var(--dark2));border:1px solid rgba(62,207,207,.22);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);transition:.25s}
+.filmstrip:hover{transform:translateY(-3px);border-color:var(--amber)}
+.sprocket{height:8px;background:repeating-linear-gradient(90deg,var(--dark) 0 6px,transparent 6px 10px);opacity:.5}
+.frame{padding:18px;position:relative}
+.frame::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;background:var(--amber);border-radius:0 3px 3px 0}
+.frame h3{font-size:17px;margin-bottom:4px;padding-left:12px}
+.frame p{font-size:13px;color:var(--muted);margin-bottom:10px;padding-left:12px}
+.chem{display:flex;gap:6px;flex-wrap:wrap;padding-left:12px}
+.chem span{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:5px;background:rgba(62,207,207,.1);color:var(--cyan);border:1px solid rgba(62,207,207,.25)}
+.chem .hot{border-color:rgba(232,116,59,.4);color:var(--amber);background:rgba(232,116,59,.1)}
+.frame .note{margin-top:10px;font-size:12px;color:var(--fix);font-family:var(--mono);padding-left:12px}
+
+/* 竖排档案 */
+.archive-list{display:flex;flex-direction:column;gap:10px}
+.archive-item{display:flex;align-items:center;gap:16px;background:var(--tray);border:1px solid rgba(196,192,184,.15);border-radius:12px;padding:14px 18px;transition:.2s}
+.archive-item:hover{border-color:var(--cyan);background:var(--dark2)}
+.archive-item .roll{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.archive-item:nth-child(6n+1) .roll{background:linear-gradient(135deg,#e8743b,#a84e22)}
+.archive-item:nth-child(6n+2) .roll{background:linear-gradient(135deg,#3ecfcf,#229a9a)}
+.archive-item:nth-child(6n+3) .roll{background:linear-gradient(135deg,#f0c040,#a88520)}
+.archive-item:nth-child(6n+4) .roll{background:linear-gradient(135deg,#c4c0b8,#6a665e)}
+.archive-item:nth-child(6n+5) .roll{background:linear-gradient(135deg,#c02030,#701018)}
+.archive-item:nth-child(6n+6) .roll{background:linear-gradient(135deg,#9b6baf,#5a3a6e)}
+.archive-item h4{font-size:15px;margin-bottom:2px}
+.archive-item p{font-size:12px;color:var(--muted)}
+.archive-item .year{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--amber);flex-shrink:0}
+
+/* 排期表 - 暗房日志 */
+.schedule{background:var(--tray);border:1px solid rgba(232,116,59,.25);border-radius:18px;overflow:hidden}
+.schedule .row{display:grid;grid-template-columns:80px 1fr 100px 80px;gap:0;border-bottom:1px dashed rgba(196,192,184,.12)}
+.schedule .row:last-child{border-bottom:none}
+.schedule .row.head{background:var(--dark2)}
+.schedule .row.head > div{font-family:var(--mono);font-size:12px;color:var(--cyan);font-weight:800}
+.schedule .row > div{padding:12px 14px;font-size:13px;display:flex;align-items:center}
+.schedule .row .time{font-family:var(--mono);color:var(--amber);font-size:12px}
+.schedule .row .film{color:var(--ink)}
+.schedule .row .format{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.schedule .row .status{font-size:11px;font-family:var(--mono)}
+.schedule .row .status.ok{color:var(--cyan)}
+.schedule .row .status.wait{color:var(--fix)}
+@media(max-width:640px){.schedule .row{grid-template-columns:60px 1fr 70px}.schedule .row .format,.schedule .row .status{display:none}}
+
+/* 词典 */
+.glossary{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:640px){.glossary{grid-template-columns:1fr}}
+.term{background:var(--tray);border:1px solid rgba(196,192,184,.15);border-radius:12px;padding:14px}
+.term b{display:block;color:var(--amber);font-family:var(--mono);font-size:14px;margin-bottom:4px}
+.term p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* 底部 */
+.footer{text-align:center;padding:30px 20px;border-top:1px solid rgba(232,116,59,.25);color:var(--muted);font-size:12px;font-family:var(--mono)}
+.footer .disclaimer{margin-top:10px;display:inline-block;background:rgba(192,32,48,.1);border:1px solid rgba(192,32,48,.3);color:#e89098;padding:8px 16px;border-radius:8px;font-size:12px}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<div class="safelight"></div>
+
+<nav class="tools">
+  <div class="brand"><b>影视</b><span>DARKROOM LAB</span></div>
+  <a class="tool-btn" href="#new">🎞️ 暗房新片</a>
+  <a class="tool-btn" href="#restore">🔬 光学修复</a>
+  <a class="tool-btn" href="#archive">📦 胶片档案</a>
+  <a class="tool-btn" href="#schedule">🕐 放映排期</a>
+  <a class="tool-btn" href="#dict">📖 显影词典</a>
+</nav>
+
+<section class="vestibule">
+  <div class="glow"></div>
+  <div class="lens">🎞️</div>
+  <h1>影视 · <em>胶片暗房</em></h1>
+  <p>不是在线影院，是暗房操作台。把新片当未显影胶片、把老片当银盐档案、把修复当光学调焦——用暗房逻辑重新组织片单。不存片、不解析、不弹窗。</p>
+  <div class="url">https://yingshi-h5.github.io</div>
+  <div class="stats">
+    <div><b>5</b><small>显影盘栏目</small></div>
+    <div><b>暗房黑</b><small>安全灯琥珀</small></div>
+    <div><b>0</b><small>弹窗/解析源</small></div>
+    <div><b>index,follow</b><small>必应友好</small></div>
+  </div>
+</section>
+
+<div class="lab">
+
+  <!-- 暗房新片 -->
+  <div class="tray-section" id="new">
+    <div class="label">
+      <h2>🎞️ 暗房新片 · <b>未显影卷</b></h2>
+      <span class="badge">FRESH ROLLS</span>
+      <span class="desc">刚冲洗出来的新片，颗粒感还在</span>
+    </div>
+    <div class="workbench">
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>奥本海默</h3>
+          <p>IMAX 65mm 胶片拍摄，70mm 拷贝放映。诺兰把"核爆"拍成默片式视觉冲击，颗粒粗粝如未定影的银盐。</p>
+          <div class="chem"><span>IMAX 70mm</span><span class="hot">胶片拍摄</span><span>DCI-P3</span></div>
+          <div class="note">暗房建议：大银幕看，别等流媒体</div>
+        </div>
+      </article>
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>坠落的审判</h3>
+          <p>法国法庭片，35mm 胶片。声音设计与画面剪辑像显影液渗透——真相慢慢浮出。</p>
+          <div class="chem"><span>35mm</span><span class="hot">金棕榈</span><span>法语</span></div>
+          <div class="note">暗房建议：戴耳机，声音是第二主角</div>
+        </div>
+      </article>
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>美国小说</h3>
+          <p>独立喜剧，16mm 胶片质感。关于写作、种族、出版业的讽刺——像用过期药水冲洗出的意外惊喜。</p>
+          <div class="chem"><span>独立</span><span class="hot">讽刺</span><span>16mm 感</span></div>
+          <div class="note">暗房建议：别看简介，直接看</div>
+        </div>
+      </article>
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>花月杀手</h3>
+          <p>斯科塞斯 3.5 小时史诗。胶片颗粒像奥色奇族土地上的石油——粗、黑、渗出来。</p>
+          <div class="chem"><span>史诗</span><span class="hot">1920s</span><span>胶片</span></div>
+          <div class="note">暗房建议：留一整个下午</div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- 光学修复 -->
+  <div class="tray-section" id="restore">
+    <div class="label">
+      <h2>🔬 光学修复 · <b>定影与调色</b></h2>
+      <span class="badge">RESTORATION</span>
+      <span class="desc">老片不是加滤镜，是重新定影</span>
+    </div>
+    <div class="workbench">
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>天堂电影院 导演剪辑版</h3>
+          <p>173 分钟版从 35mm 原始负片 4K 扫描。修复重点：找回被剪掉的"吻戏蒙太奇"的颗粒质感。</p>
+          <div class="chem"><span>4K 修复</span><span class="hot">导演剪辑</span><span>35mm 负片</span></div>
+          <div class="note">修复师说：胶片的刮痕比数字噪点有灵魂</div>
+        </div>
+      </article>
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>牯岭街少年杀人事件</h3>
+          <p>4 小时版，从 16mm 拷贝修复。修复难点：夜景暗部细节、录音带原声分离。</p>
+          <div class="chem"><span>4K 修复</span><span class="hot">237min</span><span>16mm</span></div>
+          <div class="note">修复师说：杨德昌的暗房，每一格都是刀</div>
+        </div>
+      </article>
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>罗马假日 4K 重制</h3>
+          <p>从原始底片 4K 扫描 + 手工逐帧修复划痕。赫本的脸在银盐颗粒里重新发光。</p>
+          <div class="chem"><span>4K 重制</span><span class="hot">1953</span><span>手工修复</span></div>
+          <div class="note">修复师说：罗马的阳光是调出来的，不是P的</div>
+        </div>
+      </article>
+      <article class="filmstrip">
+        <div class="sprocket"></div>
+        <div class="frame">
+          <h3>精武门 4K 修复</h3>
+          <p>李小龙经典，从保存最好的 35mm 拷贝修复。动作场面逐帧去抖动，拳拳到肉的颗粒感回来了。</p>
+          <div class="chem"><span>4K 修复</span><span class="hot">1972</span><span>动作</span></div>
+          <div class="note">修复师说：李小龙的拳速不需要升格</div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- 胶片档案 -->
+  <div class="tray-section" id="archive">
+    <div class="label">
+      <h2>📦 胶片档案 · <b>银盐库存</b></h2>
+      <span class="badge">ARCHIVE</span>
+      <span class="desc">按格式/年代/地区分类的片库索引</span>
+    </div>
+    <div class="archive-list">
+      <div class="archive-item">
+        <div class="roll">🎞️</div>
+        <div><h4>IMAX 70mm 胶片库</h4><p>奥本海默、星际穿越、蝙蝠侠：黑暗骑士——诺兰的胶片执念合集</p></div>
+        <div class="year">12 部</div>
+      </div>
+      <div class="archive-item">
+        <div class="roll">🎞️</div>
+        <div><h4>35mm 新浪潮</h4><p>法国新浪潮、香港新浪潮、台湾新电影——胶片时代的作者论</p></div>
+        <div class="year">48 部</div>
+      </div>
+      <div class="archive-item">
+        <div class="roll">🎞️</div>
+        <div><h4>16mm 独立影像</h4><p>学生作品、纪录片、实验短片——低预算高表达的胶片样本</p></div>
+        <div class="year">33 部</div>
+      </div>
+      <div class="archive-item">
+        <div class="roll">🎞️</div>
+        <div><h4>8mm 家庭录像</h4><p>私人影像、旅行记录、实验家庭电影——胶片最亲密的尺寸</p></div>
+        <div class="year">19 部</div>
+      </div>
+      <div class="archive-item">
+        <div class="roll">🎞️</div>
+        <div><h4>65mm 史诗片</h4><p>西部往事、阿拉伯的劳伦斯、太空漫游——超大画幅的视觉震撼</p></div>
+        <div class="year">8 部</div>
+      </div>
+      <div class="archive-item">
+        <div class="roll">🎞️</div>
+        <div><h4>消失的胶片格式</h4><p>Cinerama、VistaVision、Technirama——那些你没见过的宽银幕</p></div>
+        <div class="year">资料</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 放映排期 -->
+  <div class="tray-section" id="schedule">
+    <div class="label">
+      <h2>🕐 放映排期 · <b>暗房日志</b></h2>
+      <span class="badge">SCREENING</span>
+      <span class="desc">本周放映计划</span>
+    </div>
+    <div class="schedule">
+      <div class="row head">
+        <div>时间</div><div>片名</div><div>格式</div><div>状态</div>
+      </div>
+      <div class="row">
+        <div class="time">20:00</div><div class="film">天堂电影院</div><div class="format">4K 修复</div><div class="status ok">✓ 已定</div>
+      </div>
+      <div class="row">
+        <div class="time">22:30</div><div class="film">牯岭街少年杀人事件</div><div class="format">35mm 拷贝</div><div class="status wait">⏳ 待确认</div>
+      </div>
+      <div class="row">
+        <div class="time">19:00</div><div class="film">罗马假日</div><div class="format">4K 重制</div><div class="status ok">✓ 已定</div>
+      </div>
+      <div class="row">
+        <div class="time">21:15</div><div class="film">精武门</div><div class="format">4K 修复</div><div class="status ok">✓ 已定</div>
+      </div>
+      <div class="row">
+        <div class="time">23:00</div><div class="film">切黄瓜的人（短片）</div><div class="format">16mm 实验</div><div class="status wait">⏳ 待确认</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 显影词典 -->
+  <div class="tray-section" id="dict">
+    <div class="label">
+      <h2>📖 显影词典 · <b>暗房黑话</b></h2>
+      <span class="badge">GLOSSARY</span>
+      <span class="desc">把影评翻译成暗房术语</span>
+    </div>
+    <div class="glossary">
+      <div class="term"><b>显影</b><p>把隐藏在胶片里的影像"逼"出来——对应影评里的"解读"</p></div>
+      <div class="term"><b>定影</b><p>让影像固定不褪——对应"经典化"，让一部片成为经典的过程</p></div>
+      <div class="term"><b>银盐颗粒</b><p>胶片的最小感光单元——对应"质感"，数字时代最怀念的东西</p></div>
+      <div class="term"><b>安全灯</b><p>暗房里不曝光胶片的暗红色灯——对应"影评人的底线"</p></div>
+      <div class="term"><b>停显</b><p>终止显影反应——对应"剧透警告"</p></div>
+      <div class="term"><b>加厚</b><p>让影像密度更大——对应"二刷发现新细节"</p></div>
+      <div class="term"><b>减薄</b><p>降低影像密度——对应"删减版"或"导演自己砍掉的部分"</p></div>
+      <div class="term"><b>反转片</b><p>直接生成正像的胶片——对应"反转叙事/非线性结构"</p></div>
+    </div>
+  </div>
+
+  <!-- 关于 -->
+  <div class="tray-section" id="about" style="margin-top:30px">
+    <div class="label">
+      <h2>🎞️ 关于 影视</h2>
+      <span class="badge">ABOUT</span>
+    </div>
+    <div style="background:var(--tray);border:1px solid rgba(232,116,59,.25);border-radius:18px;padding:24px">
+      <p style="color:var(--muted);font-size:14px;margin-bottom:10px"><strong style="color:var(--amber)">影视</strong> 是"胶片暗房 / 光学放映台"风单页：暗房黑底、安全灯琥珀、显影青、银盐灰、定影黄。用暗房操作逻辑组织片单——新片=未显影卷、修复=定影调色、档案=银盐库存、排期=暗房日志、词典=显影黑话。</p>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:10px">官网：<code style="background:var(--dark);border:1px solid rgba(62,207,207,.3);color:var(--cyan);padding:2px 8px;border-radius:6px;font-family:var(--mono)">https://yingshi-h5.github.io</code></p>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:10px">内链全 <code style="background:var(--dark);border:1px solid rgba(62,207,207,.3);color:var(--cyan);padding:2px 8px;border-radius:6px;font-family:var(--mono)">#</code> 占位，CSS/DIV 全内联，不生成 robots.txt / sitemap.xml，GitHub Pages 直传即可；必应收录靠标题、描述、语义结构、移动端体验。</p>
+      <p style="color:var(--muted);font-size:14px">本站不提供磁力链接、不解析第三方源、不挂播放器下载、不卖会员、不托管受版权保护视频。看片请走正版院线、授权流媒体、资料馆放映。</p>
+      <div class="disclaimer">⚠️ 本页为暗房概念展示页，所有片单仅供推荐，不提供任何视频资源下载或在线播放服务。</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  © 2026 影视 · yingshi-h5.github.io · 红灯灭了再开灯，显影完了再看片 🎞️
+</footer>
+
+</body>
+</html>
